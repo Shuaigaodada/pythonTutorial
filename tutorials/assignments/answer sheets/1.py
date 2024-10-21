@@ -4,57 +4,62 @@
 问题: 
     输出九九乘法表，每输出完一行则换行。使用\t制表符隔开。
 """
-for i in range(1, 10):
-    for j in range(i, 10):
-        print(f"{i}*{j}={i * j}", end="\t")
-    print()
+
 
 """
 总和是什么(5分)
 问题: 
     计算1到12345678的和。
 """
-sum = 0
-for i in range(1, 12345678):
-    sum += i
-print(sum)
+
+
+
+
 """
 5的倍数(10分)
 问题: 
     输出1到100中所有5的倍数。
 """
-num = 0
-while num < 100:
-    num += 5
-    print(num)
+
+
+
+
 
 """
-可被除整(40分)
+可被除整(15分)
 问题:
     输出1到100中所有能被3整除的数。
 """
-for i in range(1, 101):
-    if i % 3 == 0:
-        print(i)
+
+"""
+三角斜长(25分)
+问题:
+    得出40, 80的斜边长。
+操作提示:
+    import math - 导入math模块。
+    math.sqrt() - 求平方根。
+    ** - 次方运算符。
+"""
+
+
 
 """
 什么抽象平方根(20分)
 问题:
     通过循环得出x的平方根，x的次方为整数。
 """
-x = 1936
-num = 2
-while num ** 2 != x:
-    num += 1
-print(num)
+
+
+
 """
 总和是什么 pro max(10分)
 问题: 
     计算1到1234567890的和, 不使用循环。(提示: 使用数学公式)
 """
-n = 1234567890
-sum = n * (n + 1) // 2
-print(sum)
+
+
+
+
 """
 九九乘法表 pro max(25分)
 问题: 
@@ -76,13 +81,11 @@ print(sum)
     4. %运算符的使用。
     5. counter变量的使用。
 """
-lineCounter = 0
-for i in range(1, 10):
-    for j in range(i, 10):
-        print(f"{i} * {j} = {i * j}", end="\t")
-        lineCounter += 1
-        if lineCounter % 5 == 0:
-            print()
+
+
+
+
+
 
 """
 可能性 pro max(25分)
@@ -102,10 +105,7 @@ for i in range(1, 10):
     4. 逻辑运算符的使用。
     5. 循环嵌套的使用。
 """
-for i in range(1, 5):
-    for j in range(1, 5):
-        for k in range(1, 5):
-            if i != j and i != k and j != k:
-                print(i, j, k)
+
+
 
 
