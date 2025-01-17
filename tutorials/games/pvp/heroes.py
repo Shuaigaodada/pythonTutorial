@@ -2,7 +2,7 @@ import sys
 import buff
 import skills
 import inspect
-from base_hero import BaseHero, Attributes
+from base_hero import BaseHero
 
         
 
@@ -18,7 +18,8 @@ class HeroZhangshan(BaseHero):
         self.default_attrs.critical_multiplier = 215
         self.default_attrs.armor_break = 0.15
         self.default_attrs.special = { "力": 0 }
-        self.skills = [0, 1, 2]
+        self.default_attrs.recover_multiplier = 100
+        self.skills = [0, 1, 2, 3, 4]
         self.init(skills.getter, buff.getter)
         
 

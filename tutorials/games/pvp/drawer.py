@@ -18,7 +18,7 @@ class Drawer:
         self.health_char = "█"
         self.shield_char = "▓"
         self.round = 1
-        self.choice = 1
+        self.choice = 0
         self.message = []
         self.history = []
         self.buffer = []
@@ -47,9 +47,7 @@ class Drawer:
         try:
             self.draw_health(hero1, hero2)
             self.draw_hero_status(hero1, hero2)
-            self.draw_skill(hero1, hero2)
-            
-            self.stdscr.getch()
+            self.draw_skill(hero1, hero2)            
         finally:
             self.close()
         
@@ -98,7 +96,7 @@ class Drawer:
         hero1_width = wcwidth.wcswidth(hero1.name)
         hero2_width = wcwidth.wcswidth(hero2.name)
         
-        health_text = f"{hero1.attrs.health}/{hero1.max_attrs.health}"
+        health_text = f"{hero1.health}/{hero1.max_health}"
         self.draw(0, 1, hero1.name)
         self.draw(hero1_width + 1, 1, health_text)
         total_width = hero1_width + 1 + wcwidth.wcswidth(health_text)
@@ -118,7 +116,7 @@ class Drawer:
             padding += buff_width + 1
             
         
-        hero2_text = f"{hero2.attrs.health}/{hero2.max_attrs.health}"
+        hero2_text = f"{hero2.health}/{hero2.max_health}"
         self.draw(self.cols - hero2_width, 1, hero2.name)
         self.draw(self.cols - hero2_width - 1 - len(hero2_text), 1, hero2_text)
         
@@ -152,14 +150,17 @@ class Drawer:
     
     def clac_health(self, hero: BaseHero) -> list[int]:
         base_length = int(self.cols * 0.33)
-        health = hero.attrs.health
-        max_health = hero.max_attrs.health
+        health = hero.health
+        max_health = hero.max_health
         default_health = hero.default_attrs.health
-        shield = hero.attrs.shield
+        shield = hero.shield
         
         ratio = int(base_length * (max_health / default_health))
         block = int(health / max_health * ratio)
+        
         shield_block = int(shield / max_health * ratio)
+        shield_block = min(shield_block, ratio - block)
+        
         empty_block = ratio - block - shield_block
         return [block, shield_block, empty_block]
         
@@ -213,17 +214,26 @@ if __name__ == "__main__":
     
     role1 = HeroZhangshan()
     role2 = HeroZhangshan()
-    role1.attrs.health -= 5000
-    role1.attrs.shield += 2000
-    role1.use(2)(role2)
-    # role1.skills[0].CD = 0
     
-    role2.attrs.health -= 1000
-    role2.attrs.shield += 500
-    # role2.skills[0].CD = 0
+    # role1.health -= 3000
+    role1.shield = 8000
     
     drawer = Drawer()
     drawer.init()
-    
-    drawer.message = []
     drawer.render(role1, role2)
+    # drawer.stdscr.getch()
+    while not role1.is_death() and not role2.is_death():
+        char = drawer.stdscr.getch()
+        drawer.clear()
+        if char == curses.KEY_UP:
+            drawer.choice = max(0, drawer.choice - 1)
+        elif char == curses.KEY_DOWN:
+            drawer.choice = min(len(role1.skills) - 1, drawer.choice + 1)
+        elif char == ord("\n"):
+            skill = role1.skills[drawer.choice]
+            skill.is_ready() and skill(role2)
+            drawer.round += 1
+            role1.settle()
+        
+        drawer.render(role1, role2)
+        drawer.draw(0, drawer.lines - 1, f"{role1.shield}")

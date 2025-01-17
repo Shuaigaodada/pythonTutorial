@@ -68,6 +68,8 @@ class Attributes:
         """ 英雄暴击率 """
         self.critical_multiplier: int = 0
         """ 英雄暴击伤害倍率 """
+        self.recover_multiplier: int = 100
+        """ 英雄回复效果倍率 """
         self.armor_break: float = 0
         """ 英雄穿甲倍率 """
         self.shield: int = 0
@@ -92,6 +94,7 @@ class Attributes:
         attr.speed = self.speed
         attr.critical = self.critical
         attr.critical_multiplier = self.critical_multiplier
+        attr.recover_multiplier = self.recover_multiplier
         attr.armor_break = self.armor_break
         attr.shield = self.shield
         attr.stun = self.stun
@@ -133,6 +136,11 @@ class BaseHero:
         self.skills = skills
         self.buff_getter = buff_getter
     
+    @property
+    def percentage(self) -> float:
+        """ 血量百分比 """
+        return self.attrs.health / self.max_attrs.health
+    
     def register_buff(self, name: str, duration: int, /, level: int = 1) -> None:
         """ 注册增益效果 """
         self.attrs.buff.append(Buff(
@@ -163,6 +171,15 @@ class BaseHero:
         if random.uniform(0, 100) <= prob:
             self.attrs.stun = duration
     
+    def recover(self, value: int) -> None:
+        """
+        恢复血量
+        
+        Args:
+            value: 恢复值
+        """
+        self.health = min(self.max_attrs.health, self.attrs.health + (value * self.attrs.recover_multiplier / 100))
+    
     def hurt(self, damage: int, callback: None | Callable = None) -> int:
         """
         计算角色受到伤害
@@ -172,14 +189,14 @@ class BaseHero:
         Returns:
             int: 实际受到的伤害
         """
-        damage = int(max(0, damage - self.attrs.defense * (1 - self.attrs.armor_break)))
-        if self.attrs.shield >= damage:
-            self.attrs.shield -= damage
+        damage = max(0, damage - self.attrs.defense * (1 - self.attrs.armor_break))
+        if self.shield >= damage:
+            self.shield -= damage
             real_damage = 0
         else:
-            real_damage = damage - self.attrs.shield
-            self.attrs.shield = 0
-            self.attrs.health -= real_damage
+            real_damage = damage - self.shield
+            self.shield = 0
+            self.health -= real_damage
         
         callback and callback(damage, real_damage)
         return damage
@@ -250,6 +267,17 @@ class BaseHero:
             if skill.name == index: 
                 return skill
         return None
+    
+    def find_buff(self, name: str) -> Buff:
+        """ 查找增益/减益效果 """
+        for buff in self.attrs.buff[:] + self.attrs.debuff[:]:
+            if buff.name == name:
+                return buff
+        return None
+    
+    def is_death(self) -> bool:
+        """ 是否死亡 """
+        return self.attrs.health <= 0
         
     @property
     def health(self) -> int:
@@ -284,6 +312,9 @@ class BaseHero:
     @property
     def special(self) -> dict:
         return self.attrs.special
+    @property
+    def recover_multiplier(self) -> int:
+        return self.attrs.recover_multiplier
     @property
     def max_health(self) -> int:
         return self.max_attrs.health
@@ -323,10 +354,13 @@ class BaseHero:
     @property
     def max_debuff(self) -> List[dict]:
         return self.max_attrs.debuff
+    @property
+    def max_recover_multiplier(self) -> int:
+        return self.max_attrs.recover_multiplier
     
     @health.setter
     def health(self, value: int | float) -> None:
-        self.attrs.health = int(value)
+        self.attrs.health = int(max(min(value, self.max_health), 0))
     @attack.setter
     def attack(self, value: int | float) -> None:
         self.attrs.attack = int(value)
@@ -354,6 +388,9 @@ class BaseHero:
     @stun_resist.setter
     def stun_resist(self, value: int | float) -> None:
         self.attrs.stun_resist = float(value)
+    @recover_multiplier.setter
+    def recover_multiplier(self, value: int | float) -> None:
+        self.attrs.recover_multiplier = int(value)
     @max_health.setter
     def max_health(self, value: int | float) -> None:
         self.max_attrs.health = int(value)
@@ -384,4 +421,6 @@ class BaseHero:
     @max_stun_resist.setter
     def max_stun_resist(self, value: int | float) -> None:
         self.max_attrs.stun_resist = float(value)
-
+    @max_recover_multiplier.setter
+    def max_recover_multiplier(self, value: int | float) -> None:
+        self.max_attrs.recover_multiplier = int(value)

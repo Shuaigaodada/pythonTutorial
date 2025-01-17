@@ -34,7 +34,7 @@ __skills__: Dict[int, Dict[str, str | Callable | int]] = { }
 @skill(name="重击", CD=2)
 def heavy(self: BaseHero, target: BaseHero) -> int:
     """
-    重击: 消耗所有'力'对敌方造成 200% 攻击力的伤害, 每一个'力'增加 50% 伤害, 获得造成伤害的 30% 的护盾
+    重击: 消耗所有'力'对敌方造成 200% 攻击力的伤害, 每一个'力'增加 20% 伤害, 获得造成伤害的 30% 的护盾
     类型: 物理攻击
     冷却时间 (CD): 2
     """
@@ -68,7 +68,9 @@ def red_flame_fist(self: BaseHero, target: BaseHero) -> int:
     """
     damage = self.attack * 0.75
     self.register_buff("红焉", 2)
-    return target.hurt(damage)
+    real_damage = target.hurt(damage)
+    self.recover(real_damage * 0.5)
+    self.attrs.special["力"] += 1
 
 @skill(name="无感功", CD=7)
 def no_sense(self: BaseHero, target: BaseHero) -> int:
@@ -80,6 +82,18 @@ def no_sense(self: BaseHero, target: BaseHero) -> int:
     self.register_stun(1000, 2)
     self.attrs.special["力"] += 2
     self.register_buff("无感", 7)
+    return 0
+
+@skill(name="天行剑", CD=12)
+def sky_sword(self: BaseHero, target: BaseHero) -> int:
+    """
+    天行剑: 获得 5 个'力', 全属性提升 50%, 期间'力'最低不低于 3 个, 持续 3 回合
+    类型: 眩晕
+    冷却时间 (CD): 10
+    """
+    self.attrs.special["力"] += 5
+    self.register_buff("天行", 4) # 多一个回合用于结算
+    
     return 0
     
 # ----------------- 技能定义END -------------------
