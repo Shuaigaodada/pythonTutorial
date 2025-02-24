@@ -12,7 +12,7 @@ class SkillWrapper:
         self.name = skill.get("name", "未知技能")
         self.description = skill.get("description", "未知技能")
         self.CD = skill.get("CD", 0)
-        self.DCD = skill.get("CD", 0)
+        self.DCD = skill.get("DCD", 0)
         self.function = skill.get("function")
         self.function = skill_wrapper(self.function, hero)
     

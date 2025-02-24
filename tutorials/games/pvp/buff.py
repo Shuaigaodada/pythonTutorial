@@ -31,7 +31,7 @@ def sky_sword(self: BaseHero, level: int = 1) -> None:
         if buff.duration == 1:
             # 恢复属性
             gain_attrs = self.attrs.special["_sky_sword"]
-            self.max_health -= gain_attrs[0]
+            # self.max_health -= gain_attrs[0]
             self.attack -= gain_attrs[1]
             self.defense -= gain_attrs[2]
             self.speed -= gain_attrs[3]
@@ -39,19 +39,19 @@ def sky_sword(self: BaseHero, level: int = 1) -> None:
             self.critical_multiplier -= gain_attrs[5]
             self.armor_break -= gain_attrs[6]
             self.recover_multiplier -= gain_attrs[7]    
+            self.attrs.special.pop("_sky_sword")
             return
         self.attrs.special["力"] = max(self.attrs.special["力"], 3)
     else:
-        gain_value = 1.5 + (level - 1 * 0.1)
         gain_attrs = [
-            self.max_health * gain_value,
-            self.attack * gain_value,
-            self.defense * gain_value,
-            self.speed * gain_value,
-            self.critical * gain_value,
-            self.critical_multiplier * gain_value,
-            self.armor_break * gain_value,
-            self.recover_multiplier * gain_value
+            self.max_health * .15,
+            self.attack * .25,
+            self.defense * .05,
+            self.speed * .15,
+            self.critical * .1,
+            self.critical_multiplier * .15,
+            self.armor_break * .1,
+            self.recover_multiplier * .45
         ]
         self.attrs.special["_sky_sword"] = gain_attrs
         self.max_health += gain_attrs[0]

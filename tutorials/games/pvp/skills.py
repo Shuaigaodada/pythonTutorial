@@ -20,7 +20,7 @@ def skill(name: str, CD: int) -> Callable:
             "name": name,
             "description": inspect.getdoc(function),
             "function": function,
-            "CD": CD,
+            "CD": 0,
             "DCD": CD
         }
         return function
@@ -39,8 +39,11 @@ def heavy(self: BaseHero, target: BaseHero) -> int:
     冷却时间 (CD): 2
     """
     damage = self.attack * 2
-    for _ in range(self.attrs.special["力"]):
-        damage += self.attack * 0.5
+    try:
+        for _ in range(self.attrs.special["力"]):
+            damage += self.attack * 0.5
+    except TypeError:
+        print("TypeError: ", self.attrs.special["力"])
     self.attrs.special["力"] = 0
     
     real_damage = target.hurt(damage)
@@ -87,7 +90,7 @@ def no_sense(self: BaseHero, target: BaseHero) -> int:
 @skill(name="天行剑", CD=12)
 def sky_sword(self: BaseHero, target: BaseHero) -> int:
     """
-    天行剑: 获得 5 个'力', 全属性提升 50%, 期间'力'最低不低于 3 个, 持续 3 回合
+    天行剑: 获得 5 个'力', 全属性提升, 期间'力'最低不低于 3 个, 持续 3 回合
     类型: 眩晕
     冷却时间 (CD): 10
     """

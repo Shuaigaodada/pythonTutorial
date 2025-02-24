@@ -1,0 +1,26 @@
+{
+    "Laogao0113": {
+        "email": "2983536011@qq.com",
+        "registerTime": "2021-01-13 07:01:13",
+        "coin": 3000,
+        "admin_level": 5
+    },
+    "chen": {
+        "email": "",
+        "registerTime": "2021-08-12 13:54:02",
+        "coin": 30,
+        "admin_level": 2
+    },
+    "apple": {
+        "email": "",
+        "registerTime": "2021-11-0 22:53:13",
+        "coin": 100,
+        "admin_level": 3
+    },
+    "lv": {
+        "email": "",
+        "registerTime": "2021-1-1 01:33:41",
+        "coin": 100,
+        "admin_level": 1
+    }
+}
