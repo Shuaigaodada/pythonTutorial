@@ -1,6 +1,6 @@
 # -------- 使得python脚本在当前目录下运行 --------
 import os, sys
-import getch
+import keyboard
 os.chdir(os.path.dirname(sys.argv[0]))
 # --------------------------------------------
 
@@ -15,7 +15,6 @@ BOX_CHAR = "#"
 BORDER_CHAR = ["┌", "┐", "└", "┘", "─", "│"]
 """地图边界的字符"""
 
-# ---------- 绘制part ----------
 def clear() -> None:
     """清屏函数"""
     # 清屏
@@ -53,7 +52,7 @@ def draw_map(map: list) -> None:
 def load_map(file_path: str) -> list:
     """加载地图函数"""
     # 读取地图文件
-    with open(file_path, "r") as file:
+    with open("maps/" + file_path, "r") as file:
         raw_map = file.read().split("\n")
     
     fmap = []
@@ -69,12 +68,11 @@ def load_map(file_path: str) -> list:
 
 def getkey() -> str:
     """获取用户输入"""
-    return getch.getch() # 这里因为在linux下运行，为保证双端运行使用getch而不是curses
-
-# ---------- 绘制part END -----------
+    event = keyboard.read_event()
+    if event.event_type == keyboard.KEY_DOWN:
+        return event.name
 
 # ------------- 逻辑代码 -------------
-
 # 查询玩家位置
 def find_player() -> tuple:
     """查询玩家位置函数"""
@@ -82,44 +80,17 @@ def find_player() -> tuple:
 
 # 检测碰撞
 def check_collision(x: int, y: int, dx: int, dy: int) -> bool:
-    """检测碰撞函数
-    
-    Args:
-        x: 玩家的x坐标
-        y: 玩家的y坐标
-        dx: x方向的移动距离
-        dy: y方向的移动距离
-    Returns:
-        bool: 是否碰撞
-    """
+    """检测碰撞函数"""
     pass
 
 # 移动箱子
 def move_box(x: int, y: int, dx: int, dy: int) -> bool:
-    """移动箱子函数
-    
-    Args:
-        x: 箱子的x坐标
-        y: 箱子的y坐标
-        dx: x方向的移动距离
-        dy: y方向的移动距离
-    Returns:
-        bool: 是否移动成功
-    """
+    """移动箱子函数"""
     pass
 
 # 移动玩家
 def move_player(x: int, y: int, dx: int, dy) -> None:
-    """移动玩家函数
-    
-    Args:
-        x: 玩家的x坐标
-        y: 玩家的y坐标
-        dx: x方向的移动距离
-        dy: y方向的移动距离
-    Returns:
-        None
-    """
+    """移动玩家函数"""
     pass
 
 # 检查游戏是否胜利
@@ -139,5 +110,4 @@ game_map = load_map(f"level{curlevel}.map")
 """游戏地图"""
 target_pos = load_target_pos()
 """目标点的位置"""
-
 # 游戏循环

@@ -74,7 +74,7 @@ def creator(width, height, diff: int):
     
     # 随机生成箱子和目标点
     for _ in range(diff):
-        if random.random() < 0.7:
+        if random.random() < 0.5:
             x = random.randint(1, width - 2)
             y = random.randint(1, height - 2)
             if MAP[y][x] == EMPTY_CHAR:
@@ -92,8 +92,12 @@ def creator(width, height, diff: int):
             MAP[y][x] = BOX_CHAR
             MAP[ty][tx] = TARGET_CHAR
     
+    i = 0
     # 随机放置玩家
     while True:
+        i += 1
+        if i > 77777:
+            return creator(width, height, diff)
         px, py = random.randint(1, width - 2), random.randint(1, height - 2)
         if MAP[py][px] == EMPTY_CHAR:
             MAP[py][px] = PLAYER_CHAR
@@ -117,20 +121,21 @@ def resolve(game_map):
         return False
     
     def bfs(start, targets, boxes):
-        queue = deque([start])
+        queue = deque([(start, 0)])  # 队列中包含状态和步数
         visited = set()
         visited.add(start)
         
         i = 0
         while queue:
-            if i > 500000:
+            if i > 77777 + 77777 + 77777:
                 break
             i += 1
-            
-            player_pos, box_positions = queue.popleft()
+            # if i % 7777 == 0:
+            #     print(f"第{i}次搜索", end="\r", flush=True)
+            (player_pos, box_positions), steps = queue.popleft()
             
             if all(pos in targets for pos in box_positions):
-                return True
+                return steps  # 返回步数
             
             for dx, dy in directions:
                 new_player_pos = (player_pos[0] + dx, player_pos[1] + dy)
@@ -148,9 +153,9 @@ def resolve(game_map):
                     new_state = (new_player_pos, frozenset(new_box_positions))
                     if new_state not in visited and not is_deadlock(new_box_positions):
                         visited.add(new_state)
-                        queue.append(new_state)
+                        queue.append((new_state, steps + 1))
         
-        return False
+        return -1  # 无解
     
     player_pos = None
     targets = set()
@@ -166,21 +171,32 @@ def resolve(game_map):
                 boxes.add((x, y))
     
     if not player_pos or not targets or not boxes:
-        return False
+        return -1
     
     return bfs((player_pos, frozenset(boxes)), targets, boxes)
 
 
 # 生成并保存地图
-for i in range(1, 2):
-    game_map = creator(10, 5, 30)
-    while not resolve(game_map):
+diff = 39
+for i in range(1, 11):
+    diff = min(diff + 1, 17)
+    w = random.randint(4, 8)
+    h = random.randint(4, 7)
+    game_map = creator(w, h, 10 + diff)
+    while True:
+        step = resolve(game_map)
+        if step >= diff // 2:
+            break
+            
         print("生成的地图无解，正在重新生成...")
-        game_map = creator(10, 5, 30)
-        
+        w = random.randint(4, 8)
+        h = random.randint(4, 7)
+        game_map = creator(w, h, 10 + diff)
+    
         
     print(f"地图{i}生成成功。")
     with open(os.path.join(map_dir, f"level{i}.map"), "w") as file:
         content = "\n".join(["".join(row) for row in game_map])
         file.write(content)
     print(f"地图{i}文件已生成。")
+    print(content)

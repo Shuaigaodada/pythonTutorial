@@ -1,6 +1,6 @@
 # -------- 使得python脚本在当前目录下运行 --------
 import os, sys
-import getch
+import keyboard
 os.chdir(os.path.dirname(sys.argv[0]))
 # --------------------------------------------
 
@@ -68,7 +68,9 @@ def load_map(file_path: str) -> list:
 
 def getkey() -> str:
     """获取用户输入"""
-    return getch.getch()
+    event = keyboard.read_event()
+    if event.event_type == keyboard.KEY_DOWN:
+        return event.name
 
 # ------------- 逻辑代码 -------------
 # 查询玩家位置
@@ -164,5 +166,9 @@ while True:
         
     if is_win():
         curlevel += 1
-        game_map = load_map(f"level{curlevel}.map")
-        target_pos = load_target_pos()
+        try:
+            game_map = load_map(f"level{curlevel}.map")
+            target_pos = load_target_pos()
+        except FileNotFoundError:
+            print("恭喜你通关了！")
+            break
